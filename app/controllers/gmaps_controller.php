@@ -18,7 +18,7 @@ class GmapsController extends AppController{
 	}
 	
 	/**
-	 * pattern2 GPSの位置と近隣情報を10件毎に表示
+	 * pattern2 GPSの位置と近隣情報を10件表示
 	 *          - 地図を拡大・縮小するリンクをつける
 	 *          - 地図の中心を選択対象をにするリンクをつける
 	 *          - 地図をに上下左右に移動するリンクをつける

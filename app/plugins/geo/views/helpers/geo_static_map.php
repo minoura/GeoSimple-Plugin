@@ -2,14 +2,25 @@
 // 携帯ライブラリ
 require_once(VENDORS.'ecw'.DS.'lib3gk.php');
 
-
 /**
- * GeoStaticMapHelper for GoogleStaticMaps Ver2
+ * GeoStaticMapHelper for Google Static Maps Ver2
+ * 
+ * 地図の初期状態は以下のnamedパラメータで指定
+ *    gpslat	現在地の緯度
+ *    gpslng	現在地の経度
+ *    zoom		縮尺サイズ
+ *    clat		現在地以外の中心地の緯度
+ *    clng		現在地以外の中心地の経度
+ *    plat		現在地からのパスを表示する際の緯度
+ *    plng		現在地からのパスを表示する際の経度
+ * 
  */
 class GeoStaticMapHelper extends Helper {
 	
+	// 利用Helper
 	var $helpers = array('Html');
 	
+	// Google Static Maps URL
 	var $baseUrl = 'http://maps.google.co.jp/maps/api/staticmap?1';
 	
 	// GPS緯度経度
@@ -51,9 +62,17 @@ class GeoStaticMapHelper extends Helper {
 	// 1回の移動時の地図サイズに対する割合(%)
 	var $moveLen = 50;
 	
+	// GoogleStaticMaps 他パラメータ
+	var $gparams = array(
+		// 'format' => 'jpg', 
+		// 'maptype' => 'hybrid',
+		'mobile' => 'true',
+		'sensor' => 'false',
+	);
+	
 	#####################################################
 	/**
-	 * 設定
+	 * 初期設定
 	 */
 	#####################################################
 	function __construct($configs = array()) {
@@ -176,10 +195,18 @@ class GeoStaticMapHelper extends Helper {
 	
 	#####################################################
 	/**
-	 * 検索結果の位置情報をマーカーにセット
+	 * 検索結果の位置情報をマーカーにセットし、マーク時のアルファベットをキーにした配列を返す
+	 *
+	 * @param array $results find('all')形式の結果配列
+	 * @param string $model 結果配列のモデル名
+	 * @param string $lat 緯度カラム名
+	 * @param string $lng 経度カラム名
+	 * @param string $size 'tiny', 'small', 'mid', null 
+	 *
+	 * @return array 配列インデックスを変更した結果配列
 	 */
 	#####################################################
-	function setResults($results, $model=null, $lat='lat', $lng='lng', $size = null){
+	function setResults($results, $model='', $lat='lat', $lng='lng', $size = null){
 		if(is_null($size)){
 			$size = $this->resultsSize;
 		}
@@ -224,6 +251,12 @@ class GeoStaticMapHelper extends Helper {
 	#####################################################
 	/**
 	 * 拡大縮小用のリンク
+	 * 
+	 * @param string $title リンク文字列
+	 * @param int $step 拡大縮小(1,-1,2,-2 ...)
+	 * @param array $htmlAttributes 
+	 * 
+	 * @return string Html->link()
 	 */
 	#####################################################
 	function linkZoom($title, $step, $htmlAttributes = array()){
@@ -235,6 +268,14 @@ class GeoStaticMapHelper extends Helper {
 	#####################################################
 	/**
 	 * 中心配置用のリンク
+	 * 
+	 * @param string $title リンク文字列
+	 * @param float $lat 中心地緯度
+	 * @param float $lng 中心地経度
+	 * @param bool $path 現在地へのパスを表示するかどうか
+	 * @param array $htmlAttributes 
+	 * 
+	 * @return string Html->link()
 	 */
 	#####################################################
 	function linkCenter($title, $lat, $lng, $path=true, $htmlAttributes = array()){
@@ -253,6 +294,11 @@ class GeoStaticMapHelper extends Helper {
 	#####################################################
 	/**
 	 * 中心をGPS位置に戻すリンク
+	 * 
+	 * @param string $title リンク文字列
+	 * @param array $htmlAttributes 
+	 * 
+	 * @return string Html->link()
 	 */
 	#####################################################
 	function linkCenterGPS($title, $htmlAttributes = array()){
@@ -267,6 +313,11 @@ class GeoStaticMapHelper extends Helper {
 	#####################################################
 	/**
 	 * 移動系のリンク
+	 *
+	 * @param string $title リンク文字列
+	 * @param array $htmlAttributes 
+	 * 
+	 * @return string Html->link()
 	 */
 	#####################################################
 	function linkL($title, $htmlAttributes = array()){
@@ -312,7 +363,9 @@ class GeoStaticMapHelper extends Helper {
 	
 	#####################################################
 	/**
-	 * 地図表示
+	 * 地図表示 デフォルトではGPS位置を中心地とする
+	 * 
+	 * @return string imgタグ
 	 */
 	#####################################################
 	function render(){
@@ -328,13 +381,8 @@ class GeoStaticMapHelper extends Helper {
 	 */
 	#####################################################
 	function getStaticMaps(){
+		$gparams = $this->gparams;
 		$sep = '%7C'; // '|'
-		$gparams = array(
-			// 'format' => 'jpg', 
-			// 'maptype' => 'hybrid',
-			'mobile' => 'true',
-			'sensor' => 'false',
-		);
 		
 		// GPS地点をマーク
 		if(!empty($this->gps)){
