@@ -59,6 +59,7 @@ class GeoSimpleBehavior extends ModelBehavior {
 			if($primary){
 				$distanceArr = array();
 				foreach($results as $i=>$_){
+					if(!isset($_[$model->alias])) return $results;
 					$dis = $results[$i][$model->alias]['__distance'] = $this->distance(
 						  $this->geoOptions['lat']
 						, $this->geoOptions['lng']
