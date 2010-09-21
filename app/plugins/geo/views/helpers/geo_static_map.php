@@ -2,7 +2,6 @@
 // 携帯ライブラリ
 require_once(VENDORS.'ecw'.DS.'lib3gk.php');
 
-
 /**
  * GeoStaticMapHelper for GoogleStaticMaps Ver2
  */
