@@ -132,7 +132,7 @@ class GeoSimpleHelper extends Helper {
 	function gmapLink($title, $lat, $lng, $zoom=15, $htmlAttributes = array(), $confirmMessage = false, $escapeTitle = true){
 		$url = sprintf('http://maps.google.com/?z=%s&q=%s,%s(%s)', $zoom, $lat, $lng, $title);
 		if(!isset($htmlAttributes['target'])){
-			$htmlAttributes['target'] = '_brank';
+			$htmlAttributes['target'] = '_blank';
 		}
 		return $this->Html->link($title, $url, $htmlAttributes, $confirmMessage, $escapeTitle);
 	}
